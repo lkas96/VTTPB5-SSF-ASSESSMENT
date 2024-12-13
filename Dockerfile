@@ -1,15 +1,8 @@
-FROM eclipse-temurin:23-jdk AS COMPILER
+FROM eclipse-temurin:23-jdk AS builder
 
-# labeling the dockerfile
-# LABEL MAINTAINER="lawson"
-# LABEL description="SSF DAY 17 - Carpark Project"
-# LABEL name="VTTP-SSF-DAY17-LECTURE"
+ARG APP_DIR=/app
 
-ARG COMPILE_DIR=/compiled
-
-# directory where your source code will reside
-# directory where you copy your project to (in the next step)
-WORKDIR ${COMPILE_DIR}
+WORKDIR ${APP_DIR}
 
 # copy the required files and/or directories into the image 
 COPY pom.xml .
@@ -40,10 +33,10 @@ ARG DEPLOY_DIR=/app
 
 WORKDIR ${DEPLOY_DIR}
 
-COPY --from=compiler /compiled/target/vttp.batch5.ssf-0.0.1-SNAPSHOT.jar SSF-Assessment.jar
+COPY --from=builder \ /app/target/vttp.batch5.ssf-0.0.1-SNAPSHOT.jar app.jar
 
 ENV SERVER_PORT=3000
 
 EXPOSE ${SERVER_PORT}
 
-ENTRYPOINT SERVER_PORT=${SERVER_PORT} java -jar SSF-Assessment.jar
+ENTRYPOINT java -jar app.jar
