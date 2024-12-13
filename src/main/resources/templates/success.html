@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Successfully Created</title>
+  </head>
+  <body>
+    <h3>Your message has been posted to the community message board</h3>
+    <span>The notice posting id is</span>
+    <span th:utext="@{noticeId}"></span>
+    <br>
+    <a th:href="@{/notice}">Back</a>
+  </body>
+</html>

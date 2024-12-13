@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Posting Failure</title>
+  </head>
+  <body>
+    <h3>Cannot post notice to the server</h3>
+    <span>I/O error on POST request for "</span>
+    <span th:utext="@{url}"></span>
+    <span>": Connection refused</span>
+    <br>
+    <a th:href="@{/notice}">Back</a>
+  </body>
+</html>
