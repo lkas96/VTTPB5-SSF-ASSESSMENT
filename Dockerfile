@@ -33,7 +33,7 @@ ARG DEPLOY_DIR=/app
 
 WORKDIR ${DEPLOY_DIR}
 
-COPY --from=builder \ /app/target/vttp.batch5.ssf-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder \ /app/target/noticeboard-0.0.1-SNAPSHOT.jar app.jar
 
 ENV SERVER_PORT=3000
 
