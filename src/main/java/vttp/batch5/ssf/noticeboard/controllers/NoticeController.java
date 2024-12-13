@@ -16,7 +16,6 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 // Use this class to write your request handlers
 
@@ -54,6 +53,7 @@ public class NoticeController {
         }
 
         // Else process the form
+        //why does it keep failing herrrrrrrrrrre rip
         List<String> successfullyPosted = ns.postToNoticeServer(notice);
 
         System.out.println(successfullyPosted);

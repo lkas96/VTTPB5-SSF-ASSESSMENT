@@ -9,23 +9,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.JsonArray;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
 import vttp.batch5.ssf.noticeboard.models.Notice;
 import vttp.batch5.ssf.noticeboard.repositories.NoticeRepository;
 
@@ -36,7 +28,7 @@ public class NoticeService {
 
 	// To write to redis
 	@Autowired
-	NoticeRepository np;
+	NoticeRepository nr;
 
 	// For API calls
 	RestTemplate restTemplate = new RestTemplate();
@@ -80,10 +72,6 @@ public class NoticeService {
 		System.out.println("------------------testing CONERT ARRAY-------------------------");
 		System.out.println(tempx);
 
-		// //Convert categories to Json array
-		// JsonReader jr2 = Json.createReader(new StringReader(notice.getCategories()));
-		// JsonObject jo2 =
-
 		// Build the json object of notice
 		JsonObject jo = Json.createObjectBuilder()
 				.add("title", notice.getTitle()) // String
@@ -104,33 +92,38 @@ public class NoticeService {
 		System.out.println();
 		System.out.println();
 
-		RequestEntity<String> requestEntity = RequestEntity.post(Urls.ssf)
-				.contentType(MediaType.APPLICATION_JSON).body(jo.toString());
-		restTemplate.exchange(requestEntity, )
-		;
+		// this returns 502 application error
+		// {"status":"error","code":502,"message":"Application failed to
+		// respond","request_id":"Wu_GjdZCQN-8RSCm5DKLlw_98031763"}"
+		// HttpHeaders headers = new HttpHeaders();
+		// headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		// HttpEntity<String> entity = new HttpEntity<>(jo.toString(), headers);
+		// restTemplate.exchange(Urls.ssf, HttpMethod.POST, entity, String.class);
 
 		// Call and send the data to api
-		RequestEntity<String> req = RequestEntity
-				.post(Urls.ssf, "/notice")
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.body(jo.toString(), String.class);
+		// Why wont this work lmao deadass
+		// .headers part error.
+		// returns 404 error
+		// RequestEntity<String> req = RequestEntity
+		// .post(Urls.ssf)
+		// .contentType(MediaType.APPLICATION_JSON)
+		// .headers("Accept", MediaType.APPLICATION_JSON)
+		// .body(jo.toString(), String.class);
 
 		RequestEntity<String> req2 = RequestEntity
-				.post(Urls.ssf)
-				.headers(HttpHeaders)
-				.contentType(MediaType.APPLICATION_JSON).
+		.post(Urls.ssf)
+		.header("Content-Type", "application/json")
+		.header("Accept", "application/json")
+		.body(jo.toString(), String.class);
 
-		// Receive response from api
-		ResponseEntity<String> response = restTemplate.exchange(req, String.class);
-		ResponseEntity<String> response2 = restTemplate.exchange(req2, String.class);
+		// above keep failing, 404 resource not found post /
+		// I can get data from api, idk how to postttttttttt
+		// System.out.println("AFTER REQUEST ENTITY - POST CONTENTTYPE HEADERS
+		// BODY-------------------------");
 
-		System.out.println(response.getStatusCode());
+		ResponseEntity<String> response = restTemplate.exchange(req2, String.class);
 
-		System.out.println("-----------------------RESPONSES------------------------------------------");
-		System.out.println(response);
-		System.out.println(response2);
-		System.out.println("-----------------------RESPONSES------------------------------------------");
+		System.out.println(response.getBody());
 
 		String apiBody = response.getBody();
 		JsonReader jr = Json.createReader(new StringReader(apiBody));
@@ -141,6 +134,10 @@ public class NoticeService {
 		responses.add("success");
 		responses.add(job.getString("id"));
 		responses.add(job.getString("timestamp"));
+
+		//Assume successful, calls insert to redis to save id, timestamp
+		//apibody should be the json format thingy, call to insert redis method and pass the two id/timestamps
+		nr.insertNotices(job.getString("id"), job.getString("timestamp"));
 
 		return responses;
 	}
